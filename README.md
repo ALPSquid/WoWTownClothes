@@ -1,0 +1,1 @@
+A simple WoW AddOn that toggles a dedicated equipment set while in a rested area, allowing for a different transmog while in towns. 
