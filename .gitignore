@@ -1,0 +1,7 @@
+.idea/
+Builds/
+ReleaseMaterial/
+WorkingFiles/
+deploy.bat
+*.code-workspace
+*.iml
