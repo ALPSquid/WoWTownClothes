@@ -28,6 +28,8 @@ jobs:
     - name: Create release
       uses: ncipollo/release-action@v1
       with:
+        allowUpdates: true
         tag: v${{ env.version_num }}
+        prerelease: ${{ contains(env.version_num, "alpha") ||  contains(env.version_num, "beta") }}
         artifacts: "Builds/${{ env.version_num }}/TownClothes_${{ env.version_num }}.zip"
         bodyFile: "CHANGELOG.md"
