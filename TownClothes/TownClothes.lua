@@ -87,7 +87,7 @@ function TCAD:SyncState()
     if not self.db.char.addonEnabled then
         return
     end
-    self:SetHudShown(IsResting())
+    self:SetHudShown(IsResting() or self.townClothesActive)
     _,_,_,isEquipped = C_EquipmentSet.GetEquipmentSetInfo(self.active_equipment_set_id)
     if isEquipped then
         self:DebugLog("[SyncState] Town clothes equipped.")
