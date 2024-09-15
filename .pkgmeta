@@ -2,7 +2,7 @@ package-as: TownClothes
 enable-nolib-creation: no
 
 move-folders:
-    WoWTownClothes/TownClothes: TownClothes
+    TownClothes/TownClothes: TownClothes
 
 ignore: # Files and directories beginning with a dot (such as .git) are automatically ignored, as is the pgkmeta file itself.
     - build.bat
