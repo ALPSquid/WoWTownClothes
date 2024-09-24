@@ -133,6 +133,7 @@ Happy transmogging!\n\n",
             desc = "Whether Town Clothes should automatically be switched. When disabled, the HUD button can be used to switch sets.",
             set = function(info, val)
                 TCAD.db.global.autoSwitch = val
+                TCAD.UI:UpdateEquipmentSetButtons()
                 if val then
                     TCAD:AutoSwitchTownClothes()
                 end
@@ -176,4 +177,42 @@ function TCAD.UI:Init()
     -- Profiles options
     --self.options.args.profiles = LibStub("AceDBOptions-3.0"):GetOptionsTable(TCAD.db)
     --AceConfigDialog:AddToBlizOptions("TCAD", "Profiles", "Town Clothes", "profiles")
+
+    PaperDollFrame.EquipmentManagerPane:HookScript("OnShow", self.UpdateEquipmentSetButtons, self)
+end
+
+function TCAD.UI:UpdateEquipmentSetButtons()
+    if not TCAD.activeEquipmentSetID or not PaperDollFrame.EquipmentManagerPane:IsShown() then
+        return
+    end
+    -- Add auto-switch toggle to equipment set button.
+    for _, equipmentSetBtn in ipairs(PaperDollFrame.EquipmentManagerPane.ScrollBox:GetFrames()) do
+        if equipmentSetBtn.townClothesAutoSwitchToggle then
+            TCAD:DebugLog(format("[UI] Btn %d - showing auto-switch button: %s", equipmentSetBtn.setID, tostring(equipmentSetBtn.setID == TCAD.activeEquipmentSetID)))
+            equipmentSetBtn.townClothesAutoSwitchToggle:SetShown(equipmentSetBtn.setID == TCAD.activeEquipmentSetID)
+            equipmentSetBtn.townClothesAutoSwitchToggle:SetChecked(TCAD.db.global.autoSwitch)
+        else
+            if equipmentSetBtn.setID == TCAD.activeEquipmentSetID then
+                TCAD:DebugLog("[UI] Creating auto-switch button.")
+                local autoSwitchToggle = CreateFrame("CheckButton", "Auto Switch Town Clothes", equipmentSetBtn, "ChatConfigCheckButtonTemplate")
+                autoSwitchToggle:SetHitRectInsets(0, -70, 0, 0)
+                autoSwitchToggle:SetWidth(16)
+                autoSwitchToggle:SetHeight(16)
+                autoSwitchToggle:SetPoint("BOTTOMLEFT", 40, -2)
+                autoSwitchToggle:SetChecked(TCAD.db.global.autoSwitch)
+                autoSwitchToggle.Text:SetText("Auto Switch")
+                autoSwitchToggle.Text:SetFont(select(1, autoSwitchToggle.Text:GetFont()), 10, nil)
+                autoSwitchToggle.tooltip = "Whether Town Clothes should automatically be switched. When disabled, the HUD button can be used to switch sets."
+                autoSwitchToggle:HookScript("OnClick", function()
+                    TCAD.db.global.autoSwitch = not TCAD.db.global.autoSwitch
+                    if TCAD.db.global.autoSwitch then
+                        TCAD:AutoSwitchTownClothes()
+                    end
+                    autoSwitchToggle:SetChecked(TCAD.db.global.autoSwitch)
+                end)
+                equipmentSetBtn.townClothesAutoSwitchToggle = autoSwitchToggle
+                equipmentSetBtn.townClothesAutoSwitchToggle:Show()
+            end
+        end
+    end
 end
