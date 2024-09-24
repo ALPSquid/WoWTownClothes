@@ -4,13 +4,14 @@
 --
 local _, ns = ...
 
-local TCAD = LibStub("AceAddon-3.0"):NewAddon("TownClothes", "AceConsole-3.0", "AceEvent-3.0")
+local TCAD = LibStub("AceAddon-3.0"):NewAddon("TownClothes", "AceConsole-3.0", "AceEvent-3.0", "AceTimer-3.0")
 ns.TCAD = TCAD
 TCAD.TOWN_EQUIPMENT_SET_NAME_ACTIVE = "Town Clothes"
 TCAD.TOWN_EQUIPMENT_SET_NAME_INACTIVE = "Auto TCInactive"
 
 TCAD.townClothesActive = false
 TCAD.townClothesInactiveTitleID = false
+TCAD.syncPending = false
 
 TCAD.dataDefaults =
 {
@@ -46,13 +47,44 @@ function TCAD:InfoLog(msg)
 end
 
 function TCAD:OnInitialize()
+    self.initialLoadComplete = false
     self:RegisterChatCommand("tc", "TownClothesCommand")
     self:RegisterChatCommand("townclothes", "TownClothesCommand")
 
     self.db = LibStub("AceDB-3.0"):New("TownClothesDB", self.dataDefaults, true)
-    self:DebugLog("Initialising...")
+    self:DebugLog("Loading addon...")
     self.UI:Init()
 
+    self:RegisterEvent("PLAYER_UPDATE_RESTING", self.AutoSwitchTownClothes, self)
+    self:RegisterEvent("PLAYER_REGEN_ENABLED", self.AutoSwitchTownClothes, self)
+    -- These events should just update state, rather than swapping sets.
+    self:RegisterEvent("EQUIPMENT_SWAP_FINISHED", self.ScheduleSync, self)
+    self:RegisterEvent("EQUIPMENT_SETS_CHANGED", self.ScheduleSync, self)
+    self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self.ScheduleSync, self)
+
+    self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
+        -- Wait a bit before load to complete.
+        self:ScheduleTimer(self.InitialiseState, 10, self)
+    end)
+end
+
+function TCAD:InitialiseState()
+    self:DebugLog("Initialising state.")
+    self:VerifyEquipmentSets()
+    self.initialLoadComplete = true
+    self:AutoSwitchTownClothes()
+    self:DebugLog("Initialisation complete.")
+end
+
+function TCAD:TownClothesCommand()
+    Settings.OpenToCategory(self.UI.optionsFrameRoot.name)
+end
+
+---
+--- Checks equipment sets for the ones used by the addon, creating them if needed.
+---
+function TCAD:VerifyEquipmentSets()
+    self:DebugLog("Verifying equipment sets.")
     if not C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_ACTIVE) then
         self:DebugLog("Creating active set.")
         C_EquipmentSet.CreateEquipmentSet(self.TOWN_EQUIPMENT_SET_NAME_ACTIVE, "achievement_guildperk_hastyhearth")
@@ -63,30 +95,28 @@ function TCAD:OnInitialize()
         C_EquipmentSet.CreateEquipmentSet(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE, "achievement_explore_argus")
     end
     self.inactive_equipment_set_id = C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE)
-
-    self:RegisterEvent("PLAYER_UPDATE_RESTING", self.AutoSwitchTownClothes, self)
-    self:RegisterEvent("PLAYER_REGEN_ENABLED", self.AutoSwitchTownClothes, self)
-    -- These events should just update state, rather than swapping sets.
-    self:RegisterEvent("EQUIPMENT_SWAP_FINISHED", self.SyncState, self)
-    self:RegisterEvent("EQUIPMENT_SETS_CHANGED", self.SyncState, self)
-    self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED", self.SyncState, self)
-
-    self:RegisterEvent("PLAYER_ENTERING_WORLD", function()
-        self:AutoSwitchTownClothes()
-    end)
 end
 
-function TCAD:TownClothesCommand()
-    Settings.OpenToCategory(self.UI.optionsFrameRoot.name)
+function TCAD:ScheduleSync()
+    if self.syncPending then
+        return
+    end
+    self.syncPending = true
+    self:ScheduleTimer(function()
+        self.syncPending = false
+        self:SyncState()
+    end, 1)
 end
 
 ---
 --- Syncs cached AddOn state with the current state of the player's equipment.
+--- Prefer using ScheduleSync unless you need to use the updated state immediately.
 ---
 function TCAD:SyncState()
-    if not self.db.char.addonEnabled then
+    if not self.db.char.addonEnabled or not self.initialLoadComplete then
         return
     end
+    self:VerifyEquipmentSets()
     self:SetHudShown(IsResting() or self.townClothesActive)
     _,_,_,isEquipped = C_EquipmentSet.GetEquipmentSetInfo(self.active_equipment_set_id)
     if isEquipped then
@@ -104,7 +134,7 @@ end
 --- Will sync state first, so this can be called even if auto-switch is disabled.
 ---
 function TCAD:AutoSwitchTownClothes()
-    if not self.db.char.addonEnabled then
+    if not self.db.char.addonEnabled or not self.initialLoadComplete then
         return
     end
     self:SyncState(event)
