@@ -1,3 +1,6 @@
+# Alpha v0.4
+* Added auto switch toggle to the Town Clothes equipment set directly.
+
 # Alpha v0.3
 * Improved initial load flow after loading in to reduce issues creating equipment sets.
 

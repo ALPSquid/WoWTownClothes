@@ -89,12 +89,13 @@ function TCAD:VerifyEquipmentSets()
         self:DebugLog("Creating active set.")
         C_EquipmentSet.CreateEquipmentSet(self.TOWN_EQUIPMENT_SET_NAME_ACTIVE, "achievement_guildperk_hastyhearth")
     end
-    self.active_equipment_set_id = C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_ACTIVE)
+    self.activeEquipmentSetID = C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_ACTIVE)
     if not C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE) then
         self:DebugLog("Creating inactive set.")
         C_EquipmentSet.CreateEquipmentSet(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE, "achievement_explore_argus")
     end
-    self.inactive_equipment_set_id = C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE)
+    self.inactiveEquipmentSetID = C_EquipmentSet.GetEquipmentSetID(self.TOWN_EQUIPMENT_SET_NAME_INACTIVE)
+    self.UI:UpdateEquipmentSetButtons()
 end
 
 function TCAD:ScheduleSync()
@@ -118,7 +119,7 @@ function TCAD:SyncState()
     end
     self:VerifyEquipmentSets()
     self:SetHudShown(IsResting() or self.townClothesActive)
-    _,_,_,isEquipped = C_EquipmentSet.GetEquipmentSetInfo(self.active_equipment_set_id)
+    _,_,_,isEquipped = C_EquipmentSet.GetEquipmentSetInfo(self.activeEquipmentSetID)
     if isEquipped then
         self:DebugLog("[SyncState] Town clothes equipped.")
         self.townClothesActive = true
@@ -164,11 +165,11 @@ function TCAD:SetTownClothesActive(newActiveState)
     end
     if newActiveState then
         self:DebugLog("[SetTownClothesActive] Equipping Town Clothes")
-        C_EquipmentSet.SaveEquipmentSet(self.inactive_equipment_set_id)
-        C_EquipmentSet.UseEquipmentSet(self.active_equipment_set_id)
+        C_EquipmentSet.SaveEquipmentSet(self.inactiveEquipmentSetID)
+        C_EquipmentSet.UseEquipmentSet(self.activeEquipmentSetID)
     else
         self:DebugLog("[SetTownClothesActive] Removing Town Clothes")
-        C_EquipmentSet.UseEquipmentSet(self.inactive_equipment_set_id)
+        C_EquipmentSet.UseEquipmentSet(self.inactiveEquipmentSetID)
     end
     self:SetTownClothesTitleActive(newActiveState)
 end
