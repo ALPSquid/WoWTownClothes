@@ -1,4 +1,7 @@
-# Alpha v0.4
+# Beta v0.5
+* Added options for toggling the HUD and changing its transparency.
+
+# Beta v0.4
 * Added auto switch toggle to the Town Clothes equipment set directly.
 
 # Alpha v0.3

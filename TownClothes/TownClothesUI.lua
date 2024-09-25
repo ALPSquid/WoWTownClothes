@@ -66,6 +66,19 @@ Happy transmogging!\n\n",
             order = 2.1
         },
 
+        toggleHUD =
+        {
+            type = "toggle",
+            name = "Show HUD",
+            desc = "Whether to show a HUD with the equipped state of your Town Clothes and a button to toggle them.",
+            set = function(info, val)
+                TCAD.db.char.showHUD = val
+                TCAD:SyncState()
+            end,
+            get = function() return TCAD.db.char.showHUD end,
+            order = 2.2
+        },
+
         -- Changing title requires a hardware event :(
         --toggleChangeTitle =
         --{
@@ -142,18 +155,37 @@ Happy transmogging!\n\n",
             order = 3.1
         },
 
-        buttonResetHud =
+        rangeHUDAlpha =
         {
-            type = "execute",
-            name = "Reset HUD",
-            desc = "Reset HUD position back to default. Useful it you lose it somewhere!",
-            func = function()
-                for k,v in pairs(TCAD.dataDefaults.global.hudData) do
-                    TCAD.db.global.hudData[k] = v
-                end
+            type = "range",
+            name = "HUD Transparency",
+            desc = "Transparency of the HUD. 0% = fully opaque, 100% = fully transparent.",
+            min = 0,
+            max = 1,
+            step = 0.01,
+            isPercent = true,
+            get = function()
+                return 1 - TCAD.db.global.hudAlpha
+            end,
+            set = function(info, val)
+                TCAD.db.global.hudAlpha = 1 - val
                 TCAD:UpdateHud()
             end,
             order = 3.2
+        },
+
+        buttonResetHud =
+        {
+            type = "execute",
+            name = "Reset HUD Position",
+            desc = "Reset HUD position back to default. Useful it you lose it somewhere!",
+            func = function()
+                for k,v in pairs(TCAD.dataDefaults.global.hudPositionData) do
+                    TCAD.db.global.hudPositionData[k] = v
+                end
+                TCAD:UpdateHud()
+            end,
+            order = 3.3
         },
 
         toggleDebugMode =

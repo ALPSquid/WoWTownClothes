@@ -18,13 +18,15 @@ TCAD.dataDefaults =
     char =
     {
         addonEnabled = true,
+        showHUD = true,
         changeTitle = false,
-        townTitleID = -1
+        townTitleID = -1,
     },
     global =
     {
         autoSwitch = true,
-        hudData =
+        hudAlpha = 0,
+        hudPositionData =
         {
             point = "TOP",
             relativePoint = "TOP",
@@ -197,15 +199,16 @@ function TCAD:UpdateHud()
     if not self.hud then
         return
     end
+    self.hud:SetAlpha(self.db.global.hudAlpha)
     self.hud.title:SetText(self.townClothesActive and "Town Clothes Equipped" or "Town Clothes Unequipped")
     --self:DebugLog(string.format("Point: %s, relativePoint: %s, x: %d, y: %d",
-    --        self.db.global.hudData.point,
-    --        self.db.global.hudData.relativePoint,
-    --        self.db.global.hudData.offset,
-    --        self.db.global.hudData.offsetY)
+    --        self.db.global.hudPositionData.point,
+    --        self.db.global.hudPositionData.relativePoint,
+    --        self.db.global.hudPositionData.offset,
+    --        self.db.global.hudPositionData.offsetY)
     --)
     self.hud:ClearAllPoints()
-    self.hud:SetPoint(self.db.global.hudData.point, nil, self.db.global.hudData.relativePoint, self.db.global.hudData.offsetX, self.db.global.hudData.offsetY)
+    self.hud:SetPoint(self.db.global.hudPositionData.point, nil, self.db.global.hudPositionData.relativePoint, self.db.global.hudPositionData.offsetX, self.db.global.hudPositionData.offsetY)
 end
 
 ---
@@ -214,7 +217,7 @@ end
 function TCAD:SetHudShown(shown)
     if not self.hud then
         self.hud = CreateFrame("Frame", nil, UIParent)
-        self.hud:SetPoint(self.db.global.hudData.point, nil, self.db.global.hudData.relativePoint, self.db.global.hudData.offsetX, self.db.global.hudData.offsetY)
+        self.hud:SetPoint(self.db.global.hudPositionData.point, nil, self.db.global.hudPositionData.relativePoint, self.db.global.hudPositionData.offsetX, self.db.global.hudPositionData.offsetY)
         self.hud:SetMovable(true)
         self.hud:SetResizable(false)
         self.hud:SetClampedToScreen(true)
@@ -234,10 +237,10 @@ function TCAD:SetHudShown(shown)
             self.hud:StopMovingOrSizing()
 
             local newPoint, _, relativePoint, newOffsetX, newOffsetY = self.hud:GetPoint()
-            self.db.global.hudData.point = newPoint
-            self.db.global.hudData.relativePoint = relativePoint
-            self.db.global.hudData.offsetX = newOffsetX
-            self.db.global.hudData.offsetY = newOffsetY
+            self.db.global.hudPositionData.point = newPoint
+            self.db.global.hudPositionData.relativePoint = relativePoint
+            self.db.global.hudPositionData.offsetX = newOffsetX
+            self.db.global.hudPositionData.offsetY = newOffsetY
         end)
 
         self.hud.toggleTownClothesBtn = CreateFrame("Button", nil, self.hud);
@@ -280,6 +283,6 @@ function TCAD:SetHudShown(shown)
         -- Resize to fit text and button
         self.hud:SetSize(self.hud.title:GetStringWidth() + self.hud.toggleTownClothesBtn:GetWidth() + titlePadding, 30)
     end
-
-    self.hud:SetShown(shown)
+    self.hud:SetAlpha(self.db.global.hudAlpha)
+    self.hud:SetShown(self.db.char.showHUD and shown)
 end
