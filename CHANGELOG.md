@@ -1,3 +1,6 @@
+# Beta v0.6
+* Added option for toggling HUD switch button.
+
 # Beta v0.5
 * Added options for toggling the HUD and changing its transparency.
 

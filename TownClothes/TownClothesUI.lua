@@ -72,10 +72,10 @@ Happy transmogging!\n\n",
             name = "Show HUD",
             desc = "Whether to show a HUD with the equipped state of your Town Clothes and a button to toggle them.",
             set = function(info, val)
-                TCAD.db.char.showHUD = val
+                TCAD.db.char.showHud = val
                 TCAD:SyncState()
             end,
-            get = function() return TCAD.db.char.showHUD end,
+            get = function() return TCAD.db.char.showHud end,
             order = 2.2
         },
 
@@ -155,6 +155,19 @@ Happy transmogging!\n\n",
             order = 3.1
         },
 
+        toggleHUDSwitchButton =
+        {
+            type = "toggle",
+            name = "HUD Switch Button",
+            desc = "Whether to show a button on the HUD for toggling your Town Clothes.",
+            set = function(info, val)
+                TCAD.db.global.showHudSwitchButton = val
+                TCAD:UpdateHud()
+            end,
+            get = function() return TCAD.db.global.showHudSwitchButton end,
+            order = 3.2
+        },
+
         rangeHUDAlpha =
         {
             type = "range",
@@ -171,7 +184,7 @@ Happy transmogging!\n\n",
                 TCAD.db.global.hudAlpha = 1 - val
                 TCAD:UpdateHud()
             end,
-            order = 3.2
+            order = 3.3
         },
 
         buttonResetHud =
@@ -185,7 +198,7 @@ Happy transmogging!\n\n",
                 end
                 TCAD:UpdateHud()
             end,
-            order = 3.3
+            order = 3.4
         },
 
         toggleDebugMode =

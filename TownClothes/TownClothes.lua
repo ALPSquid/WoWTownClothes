@@ -18,13 +18,14 @@ TCAD.dataDefaults =
     char =
     {
         addonEnabled = true,
-        showHUD = true,
+        showHud = true,
         changeTitle = false,
         townTitleID = -1,
     },
     global =
     {
         autoSwitch = true,
+        showHudSwitchButton = true,
         hudAlpha = 0,
         hudPositionData =
         {
@@ -199,6 +200,7 @@ function TCAD:UpdateHud()
     if not self.hud then
         return
     end
+    self.hud.toggleTownClothesBtn:SetShown(self.db.global.showHudSwitchButton)
     self.hud:SetAlpha(self.db.global.hudAlpha)
     self.hud.title:SetText(self.townClothesActive and "Town Clothes Equipped" or "Town Clothes Unequipped")
     --self:DebugLog(string.format("Point: %s, relativePoint: %s, x: %d, y: %d",
@@ -283,6 +285,7 @@ function TCAD:SetHudShown(shown)
         -- Resize to fit text and button
         self.hud:SetSize(self.hud.title:GetStringWidth() + self.hud.toggleTownClothesBtn:GetWidth() + titlePadding, 30)
     end
-    self.hud:SetAlpha(self.db.global.hudAlpha)
-    self.hud:SetShown(self.db.char.showHUD and shown)
+
+    self.hud:SetShown(self.db.char.showHud and shown)
+    self:UpdateHud()
 end
