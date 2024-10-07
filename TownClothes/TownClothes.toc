@@ -2,7 +2,7 @@
 ## Title: Town Clothes
 ## Author: Aerthok - Defias Brotherhood EU
 ## Notes: Toggles a specific equipment set while in rested zones.
-## Version: 0.6_beta
+## Version: 1.0
 ## SavedVariables: TownClothesDB
 
 embeds.xml

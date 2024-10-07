@@ -1,3 +1,6 @@
+# v1.0
+* Promoting beta 0.6 to full release.
+
 # Beta v0.6
 * Added option for toggling HUD switch button.
 
