@@ -1,3 +1,6 @@
+# v1.0.1
+* Version bump for 11.0.5
+
 # v1.0
 * Promoting beta 0.6 to full release.
 
