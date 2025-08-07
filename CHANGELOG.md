@@ -1,6 +1,9 @@
+# v1.0.5
+* Version bump for 11.2
+
 # v1.0.4
 * Version bump for 11.1.5
-* 
+
 # v1.0.3
 * Version bump for 11.1.0
 
