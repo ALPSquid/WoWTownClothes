@@ -1,8 +1,8 @@
-## Interface: 110200
+## Interface: 110205
 ## Title: Town Clothes
 ## Author: Aerthok - Defias Brotherhood EU
 ## Notes: Toggles a specific equipment set while in rested zones.
-## Version: 1.0.5
+## Version: 1.0.6
 ## SavedVariables: TownClothesDB
 
 embeds.xml
