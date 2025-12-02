@@ -1,3 +1,6 @@
+# v1.0.7
+* Version bump for 11.2.7
+
 # v1.0.6
 * Version bump for 11.2.5
 
